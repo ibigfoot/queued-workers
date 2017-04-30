@@ -10,7 +10,7 @@
 
 	<artifactId>license-worker</artifactId>
 	<packaging>jar</packaging>
-
+	
 	<dependencies>
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -19,6 +19,10 @@
 		<dependency>
 			<groupId>com.rabbitmq</groupId>
 			<artifactId>amqp-client</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.heroku.aus.cdc</groupId>
+			<artifactId>common</artifactId>
 		</dependency>
 	</dependencies>
 

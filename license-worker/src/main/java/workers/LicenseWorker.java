@@ -1,24 +1,24 @@
-package generator;
+package workers;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.rabbitmq.client.*;
+import com.rabbitmq.client.AMQP;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
+import com.rabbitmq.client.Consumer;
+import com.rabbitmq.client.DefaultConsumer;
+import com.rabbitmq.client.Envelope;
 
-public class Generator {
+public class LicenseWorker {
 
-	private static Logger logger = LoggerFactory.getLogger(Generator.class);
 	private static final String QUEUE = "CLOUDAMQP_URL";
+	private static Logger logger = LoggerFactory.getLogger(LicenseWorker.class);
 	private static final String QUEUE_NAME = "get_license_jobs";
-	
-	private static int count = 0;
 	
 	public static void main(String[] args) {
 
@@ -35,18 +35,23 @@ public class Generator {
 	 		factory.setPort(rabbitMqUrl.getPort());
 	 		factory.setVirtualHost(rabbitMqUrl.getPath().substring(1));
 	 		
+	 		
 	 		Connection conn = factory.newConnection();
 	 		Channel channel = conn.createChannel();
-	 		
 	 		channel.queueDeclare(QUEUE_NAME, false, false, false, null);
 	 		
-	 		final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-	 		executorService.scheduleAtFixedRate(new Runnable(){
+	 		Consumer consumer = new DefaultConsumer(channel) {
 	 			@Override
-	 			public void run() {
-	 				task(channel);
+	 			public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
+	 				try {
+	 					String message = new String(body, "UTF-8");
+	 					logger.info("Received [{}]", message);
+	 					//TODO - implement the "do work" bit here
+	 				} finally {
+	 					logger.info("Finished job {}", properties.getMessageId());
+	 				}
 	 			}
-	 		}, 0, 1, TimeUnit.SECONDS);
+	 		};
 	 		
 	 		// Register shutdown hook with the JVM
 	 		// TODO - put the search job back on the queue if it exists..
@@ -54,28 +59,17 @@ public class Generator {
 	 			@Override
 	 			public void run() {
 	 				
-	 				logger.info("Sutting down the Generator..");
-	 				try {
-	 					channel.close();
-	 					conn.close();
-	 				} catch (Exception e) {
-	 					e.printStackTrace();
-	 				}
+	 				logger.info("Sutting down the LicenseWorker..");
+	 				logger.warn("TODO : Ensure unprocessed job gets sent back to the queue");
 	 			}
-	 		});	 		
+	 		});
+	 		
+	 		channel.basicConsume(QUEUE_NAME, true, consumer);
+	 		logger.info("We have started listening..");
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
-	} 
-	
-	private static void task(Channel channel) {
-		try {
-			String message = "Hello.. message " + count++;
-			channel.basicPublish("", QUEUE_NAME, null, message.getBytes("UTF-8"));
-			logger.info("Sent message [{}]", message);
-		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
-		}
+ 		
 	}
 
 }

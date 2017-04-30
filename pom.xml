@@ -33,13 +33,8 @@
          </dependency>   
          <dependency>
          	<groupId>com.heroku.aus.cdc</groupId>
-         	<artifactId>license-worker</artifactId>
-         	<version>0.0.1-SNAPSHOT</version>
-         </dependency>
-         <dependency>
-         	<groupId>com.heroku.aus.cdc</groupId>
-         	<artifactId>api</artifactId>
-         	<version>0.0.1-SNAPSHOT</version>
+         	<artifactId>common</artifactId>
+         	<version>${project.version}</version>
          </dependency>         
       </dependencies> 
    </dependencyManagement>
