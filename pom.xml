@@ -4,7 +4,7 @@
 	<groupId>com.heroku.aus.cdc</groupId>
 	<artifactId>meta-api-parent</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-   <packaging>jar</packaging>
+   <packaging>pom</packaging>
 	<description>API that aggregates status of different Salesforce orgs</description>
 
    <modules>
@@ -31,6 +31,16 @@
             <artifactId>amqp-client</artifactId>
             <version>4.1.0</version>
          </dependency>   
+         <dependency>
+         	<groupId>com.heroku.aus.cdc</groupId>
+         	<artifactId>license-worker</artifactId>
+         	<version>0.0.1-SNAPSHOT</version>
+         </dependency>
+         <dependency>
+         	<groupId>com.heroku.aus.cdc</groupId>
+         	<artifactId>api</artifactId>
+         	<version>0.0.1-SNAPSHOT</version>
+         </dependency>         
       </dependencies> 
    </dependencyManagement>
 </project>
