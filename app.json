@@ -17,16 +17,6 @@
       "value": "5"
     }
   },
-  "formation": {
-    "license-worker": {
-      "quantity": 1,
-      "size": "Free"
-    },
-    "generator": {
-      "quantity": 1,
-      "size": "Free"
-    },
-  },
   "addons": [
     "cloudamqp",
     "heroku-postgresql"
