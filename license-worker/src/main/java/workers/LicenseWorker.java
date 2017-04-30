@@ -48,7 +48,7 @@ public class LicenseWorker {
 	 					logger.info("Received [{}]", message);
 	 					//TODO - implement the "do work" bit here
 	 				} finally {
-	 					logger.info("Finished job {}", properties.getMessageId());
+	 					logger.info("Finished job {}", consumerTag);
 	 				}
 	 			}
 	 		};
