@@ -4,7 +4,7 @@
 	<groupId>com.heroku.aus.cdc</groupId>
 	<artifactId>meta-api-parent</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-   <packaging>pom</packaging>
+   <packaging>jar</packaging>
 	<description>API that aggregates status of different Salesforce orgs</description>
 
    <modules>
