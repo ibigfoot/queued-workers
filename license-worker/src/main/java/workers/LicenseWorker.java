@@ -24,9 +24,24 @@ public class LicenseWorker {
 
 		logger.info("Running with queue at {}", System.getenv(QUEUE));
 		
+		LicenseWorker w = new LicenseWorker();
+		w.run();
+
+ 		// Register shutdown hook with the JVM
+ 		// TODO - put the search job back on the queue if it exists..
+ 		Runtime.getRuntime().addShutdownHook(new Thread() {
+ 			@Override
+ 			public void run() {
+ 				
+ 				logger.info("Sutting down the LicenseWorker..");
+ 				logger.warn("TODO : Ensure unprocessed job gets sent back to the queue");
+ 			}
+ 		});
+	}
+	
+	private void run() {
 		try {
 			final URI rabbitMqUrl = new URI(System.getenv(QUEUE));
-		
 		
 			ConnectionFactory factory = new ConnectionFactory();
 			factory.setHost(rabbitMqUrl.getHost());
@@ -43,33 +58,24 @@ public class LicenseWorker {
 	 		Consumer consumer = new DefaultConsumer(channel) {
 	 			@Override
 	 			public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
-	 				try {
-	 					String message = new String(body, "UTF-8");
-	 					logger.info("Received [{}]", message);
-	 					//TODO - implement the "do work" bit here
-	 				} finally {
-	 					logger.info("Finished job {}", consumerTag);
-	 				}
+	 				handle(consumerTag, envelope, properties, body);
 	 			}
 	 		};
-	 		
-	 		// Register shutdown hook with the JVM
-	 		// TODO - put the search job back on the queue if it exists..
-	 		Runtime.getRuntime().addShutdownHook(new Thread() {
-	 			@Override
-	 			public void run() {
-	 				
-	 				logger.info("Sutting down the LicenseWorker..");
-	 				logger.warn("TODO : Ensure unprocessed job gets sent back to the queue");
-	 			}
-	 		});
 	 		
 	 		channel.basicConsume(QUEUE_NAME, true, consumer);
 	 		logger.info("We have started listening..");
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
- 		
 	}
-
+	
+	private void handle(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException  {
+		try {
+			String message = new String(body, "UTF-8");
+			logger.info("Received [{}]", message);
+			//TODO - implement the "do work" bit here
+		} finally {
+			logger.info("Finished job {}", consumerTag);
+		}
+	}
 }
